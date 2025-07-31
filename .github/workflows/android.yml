@@ -54,7 +54,7 @@ jobs:
           haxelib git hxcpp https://github.com/th2l-devs/hxcpp
           haxelib git lime https://github.com/tchcfhvgd/lime
           haxelib install openfl 9.3.3
-          haxelib git flixel https://github.com/Psych-Slice/p-slice-1.0-flixel
+          haxelib git flixel https://github.com/Psych-Slice/p-slice-1.0-flixel.git 9b1192a23fcfb456123efa14c63c8506ded20e5e --quiet --skip-dependencies
           haxelib install flixel-addons 3.3.2
           haxelib install hxvlc 2.0.1
           haxelib install hscript-iris
@@ -63,8 +63,8 @@ jobs:
           haxelib git linc_luajit https://github.com/th2l-devs/linc_luajit
           haxelib git flxanimate https://github.com/Psych-Slice/FlxAnimate
           haxelib git FlxPartialSound https://github.com/FunkinDroidTeam/FlxPartialSound
-          haxelib git funkin.vis https://github.com/FunkinCrew/funkVis
-          haxelib git grig.audio https://gitlab.com/haxe-grig/grig.audio.git
+          haxelib git funkin.vis https://github.com/FunkinCrew/funkVis 22b1ce089dd924f15cdc4632397ef3504d464e90
+          haxelib git grig.audio https://gitlab.com/haxe-grig/grig.audio.git cbf91e2180fd2e374924fe74844086aab7891666
           haxelib list
       
       - name: Setup Lime

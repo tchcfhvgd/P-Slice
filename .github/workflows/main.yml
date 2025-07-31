@@ -21,14 +21,6 @@ jobs:
             cacheLibrariesPath: P-Slice.1.0.desktop-cache
             cachePath: P-Slice.1.0.build-windows
             artifactPath: export\release\windows\bin\*
-          - name: Linux
-            os: ubuntu-22.04
-            buildArgs: linux
-            exportPath: linux
-            artifactName: P-Slice.1.0.linux
-            cachePath: P-Slice.1.0.build-linux
-            cacheLibrariesPath: P-Slice.1.0.desktop-cache
-            artifactPath: export/release/linux/bin/*
           - name: macOS x86_64
             os: macos-14
             buildArgs: "mac -64 -D HXCPP_M64"
