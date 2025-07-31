@@ -54,7 +54,7 @@ jobs:
           haxelib git hxcpp https://github.com/th2l-devs/hxcpp
           haxelib git lime https://github.com/tchcfhvgd/lime
           haxelib install openfl 9.3.3
-          haxelib git flixel https://github.com/Psych-Slice/p-slice-1.0-flixe
+          haxelib git flixel https://github.com/Psych-Slice/p-slice-1.0-flixel
           haxelib install flixel-addons 3.3.2
           haxelib install hxvlc 2.0.1
           haxelib install hscript-iris
