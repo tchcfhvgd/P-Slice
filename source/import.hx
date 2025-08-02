@@ -116,6 +116,8 @@ import flixel.group.FlxSpriteGroup;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.system.FlxAssets.FlxShader;
+import flixel.ui.FlxButton;
+import flixel.addons.display.FlxBackdrop;
 
 using StringTools;
 #end
