@@ -4,290 +4,196 @@ import objects.AttachedSprite;
 
 class CreditsState extends MusicBeatState
 {
-	var curSelected:Int = -1;
+    var icon:FlxSprite;
+    var nameText:FlxText;
+    var descBox:FlxSprite;
+    var descText:FlxText;
+    var prevButton:FlxButton;
+    var nextButton:FlxButton;
+    var pageText:FlxText;
+    var curPage:Int = 0;
+    var creditsData:Array<Dynamic>;
 
-	private var grpOptions:FlxTypedGroup<Alphabet>;
-	private var iconArray:Array<AttachedSprite> = [];
-	private var creditsStuff:Array<Array<String>> = [];
+    var isTransitioning:Bool = false;
+    var transitionTime:Float = 0.4;
 
-	var bg:FlxSprite;
-	var descText:FlxText;
-	var intendedColor:FlxColor;
-	var descBox:AttachedSprite;
+        var creditsDataCN:Array<Dynamic> = [
+            {name: "Cwy",icon: "Cwy",desc: "主创\n我有点吴语...\n我是vs danke主创纯吴语\n只要6美金即可带走源码",color: "444444",link: "https://space.bilibili.com/3493119353948379?spm_id_from=333.1387.follow.user_card.click"},
+            {name: "Star Fison",icon: "Star Fison", desc: "曲师", color: "FF3366", link: "https://example.com"},
+            {name: "C-air",icon: "C-air",desc: "曲师",color: "FF3366",link: "https://space.bilibili.com/453936282"},
+            {name: "Little_earl",icon: "Little_earl",desc: "曲师",color: "FF3366",link: "https://space.bilibili.com/1388012478?spm_id_from=333.1387.follow.user_card.click"},
+			{name: "kurino198",icon: "kurino198",desc: "曲师",color: "FF3366",link: "https://example.com"},
+            {name: "fg_animator",icon: "fg_animator",desc: "k帧的",color: "FF3366",link: "https://example.com"},
+			{name: "Zozzz",icon: "Zozzz",desc: "k帧的\n所以纯吴语这家伙是怎么感觉这个名字长的?",color: "FF3366",link: "https://space.bilibili.com/3546376229095641"},
+			{name: "Who",icon: "Who",desc: "k帧的\n不是你谁呀(雾)",color: "FF3366",link: "https://example.com"},
+            {name: "gz",icon: "gz",desc: "k帧的\n瓜子二手车(雾)",color: "FF3366",link: "https://space.bilibili.com/2043246860"},
+            {name: "CM",icon: "CM",desc: "画师\n此人不太爱说话",color: "FF3366",link: "https://example.com"},
+            {name: "woofwolf",icon: "woofwolf",desc: "画师",color: "FF3366",link: "https://example.com"},
+            {name: "yibo",icon: "yibo",desc: "画师\n一波秒了怎么说(雾)",color: "FF3366",link: "https://space.bilibili.com/3546838888090366?spm_id_from=333.1387.follow.user_card.click"},
+            {name: "kabin27",icon: "kabin27",desc: "画师",color: "FF3366",link: "https://example.com"},
+            {name: "Yike_Forst",icon: "Yike_Forst",desc: "画师",color: "FF3366",link: "https://example.com"},
+            {name: "yf",icon: "yf",desc: "画师\n你这贴图怎么弹道偏上(雾)",color: "FF3366",link: "https://space.bilibili.com/3494359978740369"},
+            {name: "Molly",icon: "Molly",desc: "画师",color: "FF3366",link: "https://space.bilibili.com/1936357692?spm_id_from=333.1387.follow.user_card.click"},
+            {name: "Cwy",icon: "Cwy",desc: "程序员\n哎我去,这不deepseek吗(雾)",color: "FF3366",link: "https://example.com"},
+            {name: "枫秋Maple_autumn",icon: "maple",desc: "程序员\n哎,你这新手机从哪里来的?\n哦,这是我从手机店买的(雾)\n那么旧的呢?\n当然是去自己家里放着啦(雾)\n那么闲置的物品该怎么办?\n当然是让他闲置着啦(雾)\n\n正经介绍:你好,我是枫秋,以上的吐槽整活皆为我写的(纯整活心理,无恶意),在此,至少在这个版本截至之前我已经换了四个版本和一个引擎(累死我了)\n另外由于一些问题,按enter进入个人b站页面的功能并不是所以人都有的(因为我不知道他们的b站个人页面链接XD)\n还有,话说就我一个credit名字带中文吗...",color: "FF3366",link: "https://space.bilibili.com/678127937?spm_id_from=333.1007.0.0"},
+            {name: "zeeling_A&Q",icon: "Song Haotian",desc: "程序员\ncne专业户(雾)",color: "FF3366",link: "https://space.bilibili.com/628649483?spm_id_from=333.1387.follow.user_card.click"},
+            {name: "FGguagua",icon: "FGguagua",desc: "程序员\n呱呱",color: "FF3366",link: "https://example.com"},
+            {name: "SourCandy233",icon: "SourCandy233",desc: "程序员\n这糖果有点酸了...",color: "FF3366",link: "https://example.com"},
+            {name: "FNF Mobile phone player",icon: "FNF Mobile phone player",desc: "程序员\n嚯,我没什么好说的XD",color: "FF3366",link: "https://example.com"},
+            {name: "stone",icon: "stone",desc: "程序员\n有点硬核了(雾)",color: "FF3366",link: "https://example.com"},
+            {name: "everyone's friend",icon: "everyone's friend",desc: "程序员\n致敬传奇人脉王好朋友\n所以你不是宣发位吗XD(雾)",color: "FF3366",link: "https://space.bilibili.com/476223644"}
+        ];
+        
+    override function create()
+    {
+        super.create();
 
-	var offsetThing:Float = -75;
-
-	override function create()
-	{
-		#if DISCORD_ALLOWED
+        #if DISCORD_ALLOWED
 		// Updating Discord Rich Presence
 		DiscordClient.changePresence("In the Menus", null);
 		#end
+        persistentUpdate = true;
+        FlxG.mouse.visible = true;
 
-		persistentUpdate = true;
-		bg = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
-		bg.antialiasing = ClientPrefs.data.antialiasing;
-		add(bg);
-		bg.screenCenter();
-		
-		grpOptions = new FlxTypedGroup<Alphabet>();
-		add(grpOptions);
+        creditsData = creditsDataCN;
+        
+        var bg = new FlxBackdrop(Paths.image('menuBG'));
+        bg.velocity.set(-30, -30);
+        add(bg);
+        
+        icon = new FlxSprite(50,50).makeGraphic(300, 300, FlxColor.TRANSPARENT);
+        add(icon);
+        
+        nameText = new FlxText(50, 360, 300, "", 24);
+        nameText.setFormat(Paths.font("vcr2.ttf"), 36, FlxColor.WHITE, CENTER);
+        add(nameText);
+        
+        descBox = new FlxSprite(400, 50);
+        descBox.makeGraphic(FlxG.width - 450, FlxG.height - 100, FlxColor.fromRGB(40, 40, 40, 200));
+        descBox.scrollFactor.set();
+        add(descBox);
+        
+        descText = new FlxText(descBox.x + 20, descBox.y + 20, descBox.width - 40, "", 24);
+        descText.setFormat(Paths.font("vcr2.ttf"), 28, FlxColor.WHITE, LEFT);
+        descText.autoSize = false;
+        descText.wordWrap = true;
+        add(descText);
 
-		#if MODS_ALLOWED
-		for (mod in Mods.parseList().enabled) pushModCreditsToList(mod);
+        function setupButton(btn:FlxButton, x:Float, y:Float) {
+            btn.setPosition(x, y);
+            btn.setGraphicSize(300,60);
+            btn.updateHitbox();
+            
+            var label = new FlxText(0, 0, 200, btn.label.text, 24);
+            label.fieldWidth = btn.width;
+            label.autoSize = false;
+            label.wordWrap = false;
+            label.offset.y = -5; 
+            label.setFormat(Paths.font("vcr2.ttf"), 28, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
+            btn.label = label;
+            
+            // 悬停效果
+            btn.onOver.callback = function() {
+                FlxTween.color(btn, 0.2, FlxColor.WHITE, 0x4488CCFF);
+            };
+            
+            btn.onOut.callback = function() {
+                FlxTween.color(btn, 0.2, 0x4488CCFF, FlxColor.WHITE);
+            };
+        }
+
+        prevButton = new FlxButton(0, 0, "上一页", function() changePage(-1));
+        nextButton = new FlxButton(0, 0, "下一页", function() changePage(1));
+
+        setupButton(prevButton, 50, 450);
+        setupButton(nextButton, 50, 520);
+        add(prevButton);
+        add(nextButton);
+
+        pageText = new FlxText(50, 600, 300, "Page 1/" + creditsData.length, 24);
+        pageText.setFormat(Paths.font("vcr2.ttf"), 24, FlxColor.WHITE, CENTER);
+        add(pageText);
+
+        #if TOUCH_CONTROLS_ALLOWED
+		addTouchPad('NONE', 'A_B');
 		#end
 
-		var defaultList:Array<Array<String>> = [ //Name - Icon name - Description - Link - BG Color
-			['P-Slice Engine Team'],
-			['Mikolka9144',			'mikolka',			'The lead for the mod',								 'https://gamebanana.com/members/3329541',									'2ebcfa'],
-			[""],
-			['P-Slice Contributors'],
-			['Lily',				'lily',             'Contributed a mobile port of P-slice (no longer in the community)',                       '',		'FFE7C0'],
-			["Fazecarl",			'fazecarl',			'Made the new logo for P-Slice',									'https://gamebanana.com/members/2121406',	'29170a'],
-			["Derpy The Hedgeone",	'derpy',			'Made a lot of PRs to the repo',									'https://github.com/DerpyTheHedgeone',	'd86b00'],
-			["Mykarm",				'mykarm',			'Made the new icon for P-Slice',									'https://x.com/cronviersmeat/status/1849059676467417311?s=46&t=4dcTT7PAMkRJ8zYd4LgTow',	'29170a'],
-			[""],
-			["P-Slice server"],
-			["Join our community",	"ppslice",			"",																"https://discord.gg/9FCyCqEvRf",			"5e36c4"],
-			[""],
-			["Psych Engine Team"],
-			["Shadow Mario",		"shadowmario",		"Main Programmer and Head of Psych Engine",					"https://ko-fi.com/shadowmario",	"444444"],
-			["Riveren",				"riveren",			"Main Artist/Animator of Psych Engine",						"https://x.com/riverennn",			"14967B"],
-			[""],
-			["Former Engine Members"],
-			["bb-panzu",			"bb",				"Ex-Programmer of Psych Engine",							"https://x.com/bbsub3",				"3E813A"],
-			[""],
-			["Engine Contributors"],
-			["crowplexus",			"crowplexus",		"HScript Iris, Input System v3, and Other PRs",				"https://github.com/crowplexus",	"CFCFCF"],
-			["Kamizeta",			"kamizeta",			"Creator of Pessy, Psych Engine's mascot.",				"https://www.instagram.com/cewweey/",	"D21C11"],
-			["MaxNeton",			"maxneton",			"Loading Screen Easter Egg Artist/Animator.",	"https://bsky.app/profile/maxneton.bsky.social","3C2E4E"],
-			["Keoiki",				"keoiki",			"Note Splash Animations and Latin Alphabet",				"https://x.com/Keoiki_",			"D2D2D2"],
-			["SqirraRNG",			"sqirra",			"Crash Handler and Base code for\nChart Editor's Waveform",	"https://x.com/gedehari",			"E1843A"],
-			["EliteMasterEric",		"mastereric",		"Runtime Shaders support and Other PRs",					"https://x.com/EliteMasterEric",	"FFBD40"],
-			["MAJigsaw77",			"majigsaw",			".MP4 Video Loader Library (hxvlc)",						"https://x.com/MAJigsaw77",			"5F5F5F"],
-			["Tahir Toprak Karabekiroglu",	"tahir",	"Note Splash Editor and Other PRs",							"https://x.com/TahirKarabekir",		"A04397"],
-			["iFlicky",				"flicky",			"Composer of Psync and Tea Time\nAnd some sound effects",	"https://x.com/flicky_i",			"9E29CF"],
-			["KadeDev",				"kade",				"Fixed some issues on Chart Editor and Other PRs",			"https://x.com/kade0912",			"64A250"],
-			["superpowers04",		"superpowers04",	"LUA JIT Fork",												"https://x.com/superpowers04",		"B957ED"],
-			["CheemsAndFriends",	"cheems",			"Creator of FlxAnimate",									"https://x.com/CheemsnFriendos",	"E1E1E1"],
-			[""],
+        updateContent();
+    }
 
-			["The Funkin' Crew Inc"],
-			["ninjamuffin99",		"ninjamuffin99",	"Programmer of Friday Night Funkin'",						"https://x.com/ninja_muffin99",		"CF2D2D"],
-			["PhantomArcade",		"phantomarcade",	"Animator of Friday Night Funkin'",							"https://x.com/PhantomArcade3K",	"FADC45"],
-			["evilsk8r",			"evilsk8r",			"Artist of Friday Night Funkin'",							"https://x.com/evilsk8r",			"5ABD4B"],
-			["kawaisprite",			"kawaisprite",		"Composer of Friday Night Funkin'",							"https://x.com/kawaisprite",		"378FC7"],
-		];
-		
-		for(i in defaultList)
-			creditsStuff.push(i);
-	
-		for (i => credit in creditsStuff)
+    function updateContent()
+    {
+        var data = creditsData[curPage];
+        
+        icon.makeGraphic(300, 300, FlxColor.TRANSPARENT);
+
+        if(data.icon != null && data.icon != ""){
+            icon.loadGraphic(Paths.image('credits/${data.icon}'));
+            icon.setGraphicSize(300, 300);
+            icon.updateHitbox();
+        }
+        
+        nameText.text = data.name;
+        if(data.color != null){
+            var color = FlxColor.fromString('#' + data.color);
+            nameText.color = (color != null) ? color : FlxColor.WHITE;
+        }
+        
+        descText.text = data.desc;
+        
+        prevButton.visible = curPage > 0;
+        nextButton.visible = curPage < creditsData.length - 1;
+
+        pageText.text = "Page " + (curPage + 1) + "/" + creditsData.length;
+    }
+
+    function changePage(change:Int)
+    {
+        if (isTransitioning) return;
+    
+        isTransitioning = true;
+        FlxG.sound.play(Paths.sound('scrollMenu'));
+        
+        FlxTween.tween(icon, {alpha: 0, x: icon.x - 50}, transitionTime/2, {ease: FlxEase.quadOut});
+        FlxTween.tween(nameText, {alpha: 0}, transitionTime/2);
+        FlxTween.tween(descBox, {alpha: 0}, transitionTime/2); 
+        FlxTween.tween(descText, {alpha: 0}, transitionTime/2, {
+            onComplete: function(_) {
+                curPage = FlxMath.wrap(curPage + change, 0, creditsData.length - 1);
+                updateContent();
+
+                icon.x += 150;
+                nameText.y += 20;
+                descBox.y -= 30;
+                
+                FlxTween.tween(icon, {alpha: 1, x: icon.x - 100}, transitionTime, {ease: FlxEase.quadOut});
+                FlxTween.tween(nameText, {alpha: 1, y: nameText.y - 20}, transitionTime, {ease: FlxEase.quadOut});
+                FlxTween.tween(descBox, {alpha: 1, y: descBox.y + 30}, transitionTime, {ease: FlxEase.quadOut});
+                FlxTween.tween(descText, {alpha: 1}, transitionTime, {
+                    onComplete: function(_) {
+                        isTransitioning = false;
+                    }
+                });
+            }
+        });
+    }
+
+    override function update(elapsed:Float)
+    {
+        super.update(elapsed);
+        
+        if (FlxG.keys.justPressed.LEFT) changePage(-1);
+        if (FlxG.keys.justPressed.RIGHT) changePage(1);
+        if (FlxG.keys.justPressed.ENTER #if TOUCH_CONTROLS_ALLOWED || touchPad.buttonA.justPressed #end) FlxG.openURL(creditsData[curPage].link);
+
+        if (controls.BACK)
 		{
-			var isSelectable:Bool = !unselectableCheck(i);
-			var optionText:Alphabet = new Alphabet(FlxG.width / 2, 300, credit[0], !isSelectable);
-			optionText.isMenuItem = true;
-			optionText.targetY = i;
-			optionText.changeX = false;
-			optionText.snapToPosition();
-			grpOptions.add(optionText);
-
-			if(isSelectable)
-			{
-				if(credit[5] != null)
-					Mods.currentModDirectory = credit[5];
-
-				var str:String = 'credits/missing_icon';
-				if(credit[1] != null && credit[1].length > 0)
-				{
-					var fileName = 'credits/' + credit[1];
-					if (Paths.fileExists('images/$fileName.png', IMAGE)) str = fileName;
-					else if (Paths.fileExists('images/$fileName-pixel.png', IMAGE)) str = fileName + '-pixel';
-				}
-
-				var icon:AttachedSprite = new AttachedSprite(str);
-				if(str.endsWith('-pixel')) icon.antialiasing = false;
-				icon.xAdd = optionText.width + 10;
-				icon.sprTracker = optionText;
-	
-				// using a FlxGroup is too much fuss!
-				iconArray.push(icon);
-				add(icon);
-				Mods.currentModDirectory = '';
-
-				if(curSelected == -1) curSelected = i;
-			}
-			else optionText.alignment = CENTERED;
+			FlxG.sound.play(Paths.sound('cancelMenu'));
+			MusicBeatState.switchState(new MainMenuState());
 		}
-		
-		descBox = new AttachedSprite();
-		descBox.makeGraphic(1, 1, FlxColor.BLACK);
-		descBox.xAdd = -10;
-		descBox.yAdd = -10;
-		descBox.alphaMult = 0.6;
-		descBox.alpha = 0.6;
-		add(descBox);
-
-		descText = new FlxText(50, FlxG.height + offsetThing - 25, 1180, "", 32);
-		descText.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, CENTER/*, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK*/);
-		descText.scrollFactor.set();
-		//descText.borderSize = 2.4;
-		descBox.sprTracker = descText;
-		add(descText);
-
-		bg.color = CoolUtil.colorFromString(creditsStuff[curSelected][4]);
-		intendedColor = bg.color;
-		changeSelection();
-		#if TOUCH_CONTROLS_ALLOWED
-		addTouchPad('UP_DOWN', 'A_B');
-		#end
-		super.create();
-	}
-
-	var quitting:Bool = false;
-	var holdTime:Float = 0;
-	override function update(elapsed:Float)
-	{
-		if (FlxG.sound.music.volume < 0.7)
-		{
-			FlxG.sound.music.volume += 0.5 * FlxG.elapsed;
-		}
-
-		if(!quitting)
-		{
-			if(creditsStuff.length > 1)
-			{
-				var shiftMult:Int = 1;
-				if(FlxG.keys.pressed.SHIFT) shiftMult = 3;
-
-				var upP = controls.UI_UP_P;
-				var downP = controls.UI_DOWN_P;
-
-				if (upP)
-				{
-					changeSelection(-shiftMult);
-					holdTime = 0;
-				}
-				if (downP)
-				{
-					changeSelection(shiftMult);
-					holdTime = 0;
-				}
-
-				if(controls.UI_DOWN || controls.UI_UP)
-				{
-					var checkLastHold:Int = Math.floor((holdTime - 0.5) * 10);
-					holdTime += elapsed;
-					var checkNewHold:Int = Math.floor((holdTime - 0.5) * 10);
-
-					if(holdTime > 0.5 && checkNewHold - checkLastHold > 0)
-					{
-						changeSelection((checkNewHold - checkLastHold) * (controls.UI_UP ? -shiftMult : shiftMult));
-					}
-				}
-			}
-
-			if(controls.ACCEPT && (creditsStuff[curSelected][3] == null || creditsStuff[curSelected][3].length > 4)) {
-				CoolUtil.browserLoad(creditsStuff[curSelected][3]);
-			}
-			if (controls.BACK)
-			{
-				FlxG.sound.play(Paths.sound('cancelMenu'));
-				MusicBeatState.switchState(new MainMenuState());
-				quitting = true;
-			}
-		}
-		
-		for (item in grpOptions.members)
-		{
-			if(!item.bold)
-			{
-				var lerpVal:Float = Math.exp(-elapsed * 12);
-				if(item.targetY == 0)
-				{
-					var lastX:Float = item.x;
-					item.screenCenter(X);
-					item.x = FlxMath.lerp(item.x - 70, lastX, lerpVal);
-				}
-				else
-				{
-					item.x = FlxMath.lerp(200 + -40 * Math.abs(item.targetY), item.x, lerpVal);
-				}
-			}
-		}
-		super.update(elapsed);
-	}
-
-	var moveTween:FlxTween = null;
-	function changeSelection(change:Int = 0)
-	{
-		FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
-		do
-		{
-			curSelected = FlxMath.wrap(curSelected + change, 0, creditsStuff.length - 1);
-		}
-		while(unselectableCheck(curSelected));
-
-		var newColor:FlxColor = CoolUtil.colorFromString(creditsStuff[curSelected][4]);
-		//trace('The BG color is: $newColor');
-		if(newColor != intendedColor)
-		{
-			intendedColor = newColor;
-			FlxTween.cancelTweensOf(bg);
-			FlxTween.color(bg, 1, bg.color, intendedColor);
-		}
-
-		for (num => item in grpOptions.members)
-		{
-			item.targetY = num - curSelected;
-			if(!unselectableCheck(num)) {
-				item.alpha = 0.6;
-				if (item.targetY == 0) {
-					item.alpha = 1;
-				}
-			}
-		}
-
-		descText.text = creditsStuff[curSelected][2];
-		if(descText.text.trim().length > 0)
-		{
-			descText.visible = descBox.visible = true;
-			descText.y = FlxG.height - descText.height + offsetThing - 60;
-	
-			if(moveTween != null) moveTween.cancel();
-			moveTween = FlxTween.tween(descText, {y : descText.y + 75}, 0.25, {ease: FlxEase.sineOut});
-	
-			descBox.setGraphicSize(Std.int(descText.width + 20), Std.int(descText.height + 25));
-			descBox.updateHitbox();
-		}
-		else descText.visible = descBox.visible = false;
-	}
-
-	#if MODS_ALLOWED
-	function pushModCreditsToList(folder:String)
-	{
-		var creditsFile:String = Paths.mods(folder + '/data/credits.txt');
-		
-		#if TRANSLATIONS_ALLOWED
-		//trace('/data/credits-${ClientPrefs.data.language}.txt');
-		var translatedCredits:String = Paths.mods(folder + '/data/credits-${ClientPrefs.data.language}.txt');
-		#end
-
-		if (#if TRANSLATIONS_ALLOWED (NativeFileSystem.exists(translatedCredits) && (creditsFile = translatedCredits) == translatedCredits) || #end NativeFileSystem.exists(creditsFile))
-		{
-			var firstarray:Array<String> = NativeFileSystem.getContent(creditsFile).split('\n');
-			for(i in firstarray)
-			{
-				var arr:Array<String> = i.replace('\\n', '\n').split("::");
-				if(arr.length >= 5) arr.push(folder);
-				creditsStuff.push(arr);
-			}
-			creditsStuff.push(['']);
-		}
-	}
-	#end
-
-	private function unselectableCheck(num:Int):Bool {
-		return creditsStuff[num].length <= 1;
-	}
+        
+        /*if(FlxG.mouse.justPressed && descBox.overlapsPoint(FlxG.mouse.getPosition())){
+            FlxG.openURL(creditsData[curPage].link);
+        }*/
+    }
 }

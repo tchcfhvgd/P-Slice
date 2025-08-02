@@ -1,0 +1,27 @@
+{
+    "storyName": "Your New Week",
+    "difficulties": "hard",
+    "hideFreeplay": false,
+    "weekBackground": "stage",
+    "weekBefore": "tutorial",
+    "startUnlocked": true,
+    "weekCharacters": [
+        "dad",
+        "bf",
+        "gf"
+    ],
+    "hideStoryMode": false,
+    "songs": [
+        [
+            "sky",
+            "icon-redkill",
+            [
+                6,
+                213,
+                253
+            ]
+        ]
+    ],
+    "weekName": "Custom Week",
+    "hiddenUntilUnlocked": false
+}

@@ -47,14 +47,14 @@ class MobileFunctions
 		Lua_helper.add_callback(lua, "extraHintPressed", (button:String) ->
 		{
 			button = button.toLowerCase();
-			if (MusicBeatState.getState().hitbox != null)
+			if (MusicBeatState.getState().mobileControls != null)
 			{
 				switch (button)
 				{
 					case 'second':
-						return MusicBeatState.getState().hitbox.buttonExtra2.pressed;
+						return MusicBeatState.getState().mobileControls.buttonExtra2.pressed;
 					default:
-						return MusicBeatState.getState().hitbox.buttonExtra.pressed;
+						return MusicBeatState.getState().mobileControls.buttonExtra.pressed;
 				}
 			}
 			return false;
@@ -63,14 +63,14 @@ class MobileFunctions
 		Lua_helper.add_callback(lua, "extraHintJustPressed", (button:String) ->
 		{
 			button = button.toLowerCase();
-			if (MusicBeatState.getState().hitbox != null)
+			if (MusicBeatState.getState().mobileControls != null)
 			{
 				switch (button)
 				{
 					case 'second':
-						return MusicBeatState.getState().hitbox.buttonExtra2.justPressed;
+						return MusicBeatState.getState().mobileControls.buttonExtra2.justPressed;
 					default:
-						return MusicBeatState.getState().hitbox.buttonExtra.justPressed;
+						return MusicBeatState.getState().mobileControls.buttonExtra.justPressed;
 				}
 			}
 			return false;
@@ -79,14 +79,14 @@ class MobileFunctions
 		Lua_helper.add_callback(lua, "extraHintJustReleased", (button:String) ->
 		{
 			button = button.toLowerCase();
-			if (MusicBeatState.getState().hitbox != null)
+			if (MusicBeatState.getState().mobileControls != null)
 			{
 				switch (button)
 				{
 					case 'second':
-						return MusicBeatState.getState().hitbox.buttonExtra2.justReleased;
+						return MusicBeatState.getState().mobileControls.buttonExtra2.justReleased;
 					default:
-						return MusicBeatState.getState().hitbox.buttonExtra.justReleased;
+						return MusicBeatState.getState().mobileControls.buttonExtra.justReleased;
 				}
 			}
 			return false;
@@ -95,14 +95,14 @@ class MobileFunctions
 		Lua_helper.add_callback(lua, "extraHintReleased", (button:String) ->
 		{
 			button = button.toLowerCase();
-			if (MusicBeatState.getState().hitbox != null)
+			if (MusicBeatState.getState().mobileControls != null)
 			{
 				switch (button)
 				{
 					case 'second':
-						return MusicBeatState.getState().hitbox.buttonExtra2.released;
+						return MusicBeatState.getState().mobileControls.buttonExtra2.released;
 					default:
-						return MusicBeatState.getState().hitbox.buttonExtra.released;
+						return MusicBeatState.getState().mobileControls.buttonExtra.released;
 				}
 			}
 			return false;
@@ -306,7 +306,7 @@ class MobileFunctions
 	}
 
 	public static function getMobileControlsAsString():String
-		return 'hitbox';
+		return 'mobileControls';
 }
 
 class MobileDeprecatedFunctions
@@ -318,14 +318,14 @@ class MobileDeprecatedFunctions
 		{
 			FunkinLua.luaTrace("extraButtonPressed is deprecated! Use extraHintPressed instead", false, true);
 			button = button.toLowerCase();
-			if (MusicBeatState.getState().hitbox != null)
+			if (MusicBeatState.getState().mobileControls != null)
 			{
 				switch (button)
 				{
 					case 'second':
-						return MusicBeatState.getState().hitbox.buttonExtra2.pressed;
+						return MusicBeatState.getState().mobileControls.buttonExtra2.pressed;
 					default:
-						return MusicBeatState.getState().hitbox.buttonExtra.pressed;
+						return MusicBeatState.getState().mobileControls.buttonExtra.pressed;
 				}
 			}
 			return false;
@@ -335,14 +335,14 @@ class MobileDeprecatedFunctions
 		{
 			FunkinLua.luaTrace("extraButtonJustPressed is deprecated! Use extraHintJustPressed instead", false, true);
 			button = button.toLowerCase();
-			if (MusicBeatState.getState().hitbox != null)
+			if (MusicBeatState.getState().mobileControls != null)
 			{
 				switch (button)
 				{
 					case 'second':
-						return MusicBeatState.getState().hitbox.buttonExtra2.justPressed;
+						return MusicBeatState.getState().mobileControls.buttonExtra2.justPressed;
 					default:
-						return MusicBeatState.getState().hitbox.buttonExtra.justPressed;
+						return MusicBeatState.getState().mobileControls.buttonExtra.justPressed;
 				}
 			}
 			return false;
@@ -352,14 +352,14 @@ class MobileDeprecatedFunctions
 		{
 			FunkinLua.luaTrace("extraButtonJustReleased is deprecated! Use extraHintJustReleased instead", false, true);
 			button = button.toLowerCase();
-			if (MusicBeatState.getState().hitbox != null)
+			if (MusicBeatState.getState().mobileControls != null)
 			{
 				switch (button)
 				{
 					case 'second':
-						return MusicBeatState.getState().hitbox.buttonExtra2.justReleased;
+						return MusicBeatState.getState().mobileControls.buttonExtra2.justReleased;
 					default:
-						return MusicBeatState.getState().hitbox.buttonExtra.justReleased;
+						return MusicBeatState.getState().mobileControls.buttonExtra.justReleased;
 				}
 			}
 			return false;
@@ -369,14 +369,14 @@ class MobileDeprecatedFunctions
 		{
 			FunkinLua.luaTrace("extraButtonReleased is deprecated! Use extraHintReleased instead", false, true);
 			button = button.toLowerCase();
-			if (MusicBeatState.getState().hitbox != null)
+			if (MusicBeatState.getState().mobileControls != null)
 			{
 				switch (button)
 				{
 					case 'second':
-						return MusicBeatState.getState().hitbox.buttonExtra2.released;
+						return MusicBeatState.getState().mobileControls.buttonExtra2.released;
 					default:
-						return MusicBeatState.getState().hitbox.buttonExtra.released;
+						return MusicBeatState.getState().mobileControls.buttonExtra.released;
 				}
 			}
 			return false;

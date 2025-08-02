@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Mobile Porting Team
+ * Copyright (C) 2025 Mobile Porting Team
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -27,13 +27,13 @@ import flixel.input.FlxInput;
 import flixel.input.FlxPointer;
 import flixel.input.IFlxInput;
 import flixel.util.FlxDestroyUtil.IFlxDestroyable;
-#if desktop
+#if mac
 import flixel.input.mouse.FlxMouseButton;
 #end
 
 /**
  * A simple button class that calls a function when clicked by the touch.
- * @author: Karim Akra and Lily Ross (mcagabe19)
+ * @author: Karim Akra and Homura Akemi (HomuHomu833)
  */
 class TouchButton extends TypedTouchButton<FlxSprite>
 {
@@ -308,7 +308,7 @@ class TypedTouchButton<T:FlxSprite> extends FlxSprite implements IFlxInput
 
 		for (camera in cameras)
 		{
-			#if desktop
+			#if mac
 			var button = FlxMouseButton.getByID(FlxMouseButtonID.LEFT);
 			if (checkInput(FlxG.mouse, button, button.justPressedPosition, camera))
 			#else
@@ -440,7 +440,7 @@ class TypedTouchButton<T:FlxSprite> extends FlxSprite implements IFlxInput
 		updateLabelPosition();
 
 		if (statusIndicatorType == BRIGHTNESS && label != null && brightShader != null)
-			label.shader = brightShader;
+			_spriteLabel.shader = brightShader;
 
 		return Value;
 	}

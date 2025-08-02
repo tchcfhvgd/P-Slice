@@ -168,10 +168,10 @@ class EditorPlayState extends MusicBeatSubstate
 		addTouchPadCamera(false);
 		#end
 
-		addHitbox();
-		hitbox.visible = true;
-		hitbox.onButtonDown.add(onHintPress);
-		hitbox.onButtonUp.add(onHintRelease);
+		addMobileControls();
+		mobileControls.instance.visible = true;
+		mobileControls.onButtonDown.add(onButtonPress);
+		mobileControls.onButtonUp.add(onButtonRelease);
 		#end
 		
 		super.create();
@@ -187,7 +187,7 @@ class EditorPlayState extends MusicBeatSubstate
 		#end
 		{
 			#if TOUCH_CONTROLS_ALLOWED
-			hitbox.visible = false;
+			mobileControls.instance.visible = false;
 			#end
 			endSong();
 			super.update(elapsed);
@@ -766,15 +766,21 @@ class EditorPlayState extends MusicBeatSubstate
 	}
 
 	#if TOUCH_CONTROLS_ALLOWED
-	private function onHintPress(button:TouchButton):Void
+	private function onButtonPress(button:TouchButton):Void
 	{
-		var buttonCode:Int = (button.IDs[0].toString().startsWith('HITBOX')) ? button.IDs[1] : button.IDs[0];
+		if (button.IDs.filter(id -> id.toString().startsWith("EXTRA")).length > 0)
+			return;
+
+		var buttonCode:Int = (button.IDs[0].toString().startsWith('NOTE')) ? button.IDs[0] : button.IDs[1];
 		if (button.justPressed) keyPressed(buttonCode);
 	}
 
-	private function onHintRelease(button:TouchButton):Void
+	private function onButtonRelease(button:TouchButton):Void
 	{
-		var buttonCode:Int = (button.IDs[0].toString().startsWith('HITBOX')) ? button.IDs[1] : button.IDs[0];
+		if (button.IDs.filter(id -> id.toString().startsWith("EXTRA")).length > 0)
+			return;
+
+		var buttonCode:Int = (button.IDs[0].toString().startsWith('NOTE')) ? button.IDs[0] : button.IDs[1];
 		if(buttonCode > -1) keyReleased(buttonCode);
 	}
 	#end

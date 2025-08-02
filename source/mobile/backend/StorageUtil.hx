@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Mobile Porting Team
+ * Copyright (C) 2025 Mobile Porting Team
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -22,18 +22,13 @@
 
 package mobile.backend;
 
-#if android
-import android.os.Environment;
-#end
 import lime.system.System as LimeSystem;
 import haxe.io.Path;
 import haxe.Exception;
-import sys.FileSystem;
 
 /**
  * A storage class for mobile.
  * @author Karim Akra and Lily Ross (mcagabe19)
- * @author Mikolka9144
  */
 class StorageUtil
 {
@@ -55,6 +50,7 @@ class StorageUtil
 		#else
 		daPath = Sys.getCwd();
 		#end
+
 		return daPath;
 	}
 
@@ -67,11 +63,11 @@ class StorageUtil
 
 			File.saveContent('saves/$fileName', fileData);
 			if (alert)
-				CoolUtil.showPopUp('$fileName has been saved.', "Success!");
+				CoolUtil.showPopUp(Language.getPhrase('file_save_success', '{1} has been saved.', [fileName]), Language.getPhrase('mobile_success', "Success!"));
 		}
 		catch (e:Exception)
 			if (alert)
-				CoolUtil.showPopUp('$fileName couldn\'t be saved.\n(${e.message})', "Error!")
+				CoolUtil.showPopUp(Language.getPhrase('file_save_fail', '{1} couldn\'t be saved.\n({2})', [fileName, e.message]), Language.getPhrase('mobile_error', "Error!"));
 			else
 				trace('$fileName couldn\'t be saved. (${e.message})');
 	}
@@ -79,46 +75,35 @@ class StorageUtil
 	#if android
 	public static function requestPermissions():Void
 	{
-		var requiresUserPermissions = AndroidVersion.SDK_INT >= AndroidVersionCode.M;
-		if(requiresUserPermissions) checkUserStoragePermissions();
-		else trace("We are on Lolipop?? No need to beg for permissions then");
+		if (AndroidVersion.SDK_INT >= AndroidVersionCode.TIRAMISU)
+			AndroidPermissions.requestPermissions(['READ_MEDIA_IMAGES', 'READ_MEDIA_VIDEO', 'READ_MEDIA_AUDIO']);
+		else
+			AndroidPermissions.requestPermissions(['READ_EXTERNAL_STORAGE', 'WRITE_EXTERNAL_STORAGE']);
 
-		trace("Checking game directory...");
+		if (!AndroidEnvironment.isExternalStorageManager())
+		{
+			if (AndroidVersion.SDK_INT >= AndroidVersionCode.S)
+				AndroidSettings.requestSetting('REQUEST_MANAGE_MEDIA');
+			AndroidSettings.requestSetting('MANAGE_APP_ALL_FILES_ACCESS_PERMISSION');
+		}
+
+		if ((AndroidVersion.SDK_INT >= AndroidVersionCode.TIRAMISU
+			&& !AndroidPermissions.getGrantedPermissions().contains('android.permission.READ_MEDIA_IMAGES'))
+			|| (AndroidVersion.SDK_INT < AndroidVersionCode.TIRAMISU
+				&& !AndroidPermissions.getGrantedPermissions().contains('android.permission.READ_EXTERNAL_STORAGE')))
+			CoolUtil.showPopUp(Language.getPhrase('permissions_message', 'If you accepted the permissions you are all good!\nIf you didn\'t then expect a crash\nPress OK to see what happens'),
+				Language.getPhrase('mobile_notice', "Notice!"));
+
 		try
 		{
 			if (!FileSystem.exists(StorageUtil.getStorageDirectory()))
 				FileSystem.createDirectory(StorageUtil.getStorageDirectory());
 		}
-		catch (e:Exception)
+		catch (e:Dynamic)
 		{
-			trace(e);
-			CoolUtil.showPopUp(e.message+'\nPlease create directory to\n' + StorageUtil.getStorageDirectory(true) + '\nPress OK to close the game', 'Error!');
-			//LimeSystem.exit(1);
+			CoolUtil.showPopUp(Language.getPhrase('create_directory_error', 'Please create directory to\n{1}\nPress OK to close the game', [StorageUtil.getStorageDirectory(true)]), Language.getPhrase('mobile_error', "Error!"));
+			LimeSystem.exit(1);
 		}
-	}
-
-	public static function checkUserStoragePermissions() {
-		var isAPI33 = AndroidVersion.SDK_INT >= AndroidVersionCode.TIRAMISU;
-		trace("Check perms...");
-
-		if (!isAPI33){
-			trace("Requesting EXTERNAL_STORAGE");
-			AndroidPermissions.requestPermissions(['READ_EXTERNAL_STORAGE', 'WRITE_EXTERNAL_STORAGE']);
-		}
-
-		if (!AndroidEnvironment.isExternalStorageManager())
-		{
-			// if (AndroidVersion.SDK_INT >= AndroidVersionCode.S)
-			// 	AndroidSettings.requestSetting('REQUEST_MANAGE_MEDIA');
-			AndroidSettings.requestSetting('MANAGE_APP_ALL_FILES_ACCESS_PERMISSION');
-		}
-		var has_MANAGE_EXTERNAL_STORAGE = Environment.isExternalStorageManager();
-		var has_READ_EXTERNAL_STORAGE = AndroidPermissions.getGrantedPermissions().contains('android.permission.READ_EXTERNAL_STORAGE');
-		//var has_READ_MEDIA_IMAGES = AndroidPermissions.getGrantedPermissions().contains('android.permission.READ_MEDIA_IMAGES');
-		if ((isAPI33 && !has_MANAGE_EXTERNAL_STORAGE)
-			|| (!isAPI33 && !has_READ_EXTERNAL_STORAGE))
-			CoolUtil.showPopUp('If you accepted the permissions you are all good!' + '\nIf you didn\'t then expect a crash' + '\nPress OK to see what happens',
-				'Notice!');
 	}
 
 	public static function checkExternalPaths(?splitStorage = false):Array<String>
@@ -149,41 +134,43 @@ class StorageUtil
 enum abstract StorageType(String) from String to String
 {
 	final forcedPath = '/storage/emulated/0/';
-	final packageNameLocal = 'com.mikolka9144.pslice';
-	final fileLocal = 'PSliceEngine';
+	final packageNameLocal = 'com.cwy.takanashirikka';
+	final fileLocal = 'TakanashiRikka';
 
 	var EXTERNAL_DATA = "EXTERNAL_DATA";
+	var EXTERNAL_OBB = "EXTERNAL_OBB";
+	var EXTERNAL_MEDIA = "EXTERNAL_MEDIA";
 	var EXTERNAL = "EXTERNAL";
 
 	public static function fromStr(str:String):StorageType
 	{
-		try{
-			return switch (str)
-			{
-				case "EXTERNAL_DATA": 
-					final EXTERNAL_DATA = AndroidContext.getExternalFilesDir();
-					EXTERNAL_DATA;
-				case "EXTERNAL": 
-					final EXTERNAL = AndroidEnvironment.getExternalStorageDirectory() + '/.' + lime.app.Application.current.meta.get('file');
-					EXTERNAL;
-				default: StorageUtil.getExternalDirectory(str) + '.' + fileLocal;
-			}
-		}
-		catch(x:Exception){
-			trace("Failed to read storage. Forcing paths!");
-			trace(x);
-			return fromStrForce(str);
+		final EXTERNAL_DATA = AndroidContext.getExternalFilesDir();
+		final EXTERNAL_OBB = AndroidContext.getObbDir();
+		final EXTERNAL_MEDIA = AndroidEnvironment.getExternalStorageDirectory() + '/Android/media/' + lime.app.Application.current.meta.get('packageName');
+		final EXTERNAL = AndroidEnvironment.getExternalStorageDirectory() + '/.' + lime.app.Application.current.meta.get('file');
+
+		return switch (str)
+		{
+			case "EXTERNAL_DATA": EXTERNAL_DATA;
+			case "EXTERNAL_OBB": EXTERNAL_OBB;
+			case "EXTERNAL_MEDIA": EXTERNAL_MEDIA;
+			case "EXTERNAL": EXTERNAL;
+			default: StorageUtil.getExternalDirectory(str) + '.' + fileLocal;
 		}
 	}
 
 	public static function fromStrForce(str:String):StorageType
 	{
 		final EXTERNAL_DATA = forcedPath + 'Android/data/' + packageNameLocal + '/files';
+		final EXTERNAL_OBB = forcedPath + 'Android/obb/' + packageNameLocal;
+		final EXTERNAL_MEDIA = forcedPath + 'Android/media/' + packageNameLocal;
 		final EXTERNAL = forcedPath + '.' + fileLocal;
 
 		return switch (str)
 		{
 			case "EXTERNAL_DATA": EXTERNAL_DATA;
+			case "EXTERNAL_OBB": EXTERNAL_OBB;
+			case "EXTERNAL_MEDIA": EXTERNAL_MEDIA;
 			case "EXTERNAL": EXTERNAL;
 			default: StorageUtil.getExternalDirectory(str) + '.' + fileLocal;
 		}

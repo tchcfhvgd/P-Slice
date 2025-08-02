@@ -5,6 +5,13 @@ import flixel.input.keyboard.FlxKey;
 import mikolka.vslice.ui.disclaimer.TextWarnings.FlashingState;
 import mikolka.vslice.ui.disclaimer.TextWarnings.OutdatedState;
 import mikolka.vslice.components.ScreenshotPlugin;
+import openfl.utils.Assets as OpenFlAssets;
+#if VIDEOS_ALLOWED
+#if hxvlc
+import hxvlc.flixel.*;
+import hxvlc.util.*;
+#end
+#end
 
 class InitState extends MusicBeatState
 {
@@ -52,32 +59,11 @@ class InitState extends MusicBeatState
 
 		//* FIRST INIT! iNITIALISE IMPORTED PLUGINS
 		ScreenshotPlugin.initialize();
-
-		if (FlxG.save.data.flashing == null)
+		
+		new FlxTimer().start(0.15, function(tmr:FlxTimer)
 		{
-			controls.isInSubstate = false;
-			FlxTransitionableState.skipNextTransIn = true;
-			FlxTransitionableState.skipNextTransOut = true;
-			MusicBeatState.switchState(new FlashingState(new TitleState()));
-		}
-        #if CHECK_FOR_UPDATES
-        else if (mustUpdate){
-            MusicBeatState.switchState(new OutdatedState(updateVersion,new TitleState()));
-        }
-        #end
-		else
-		{
-			new FlxTimer().start(0.15, function(tmr:FlxTimer)
-			{
-				#if FREEPLAY
-				MusicBeatState.switchState(new FreeplayState());
-				#elseif CHARTING
-				MusicBeatState.switchState(new ChartingState());
-				#else
-				MusicBeatState.switchState(new TitleState());
-				#end
-			});
-		}
+	        startVideo('start');
+	    });
 	}
 
 	#if CHECK_FOR_UPDATES
@@ -109,4 +95,65 @@ class InitState extends MusicBeatState
 		}
 	}
 	#end
+	
+	public function startVideo(name:String)
+	{
+		#if VIDEOS_ALLOWED
+
+		var filepath:String = Paths.video(name);
+		#if sys
+		if(!NativeFileSystem.exists(filepath))
+		#else
+		if(!OpenFlAssets.exists(filepath))
+		#end
+		{
+			FlxG.log.warn('Couldnt find video file: ' + name);
+			qqqeb();
+			return;
+		}
+
+		var video:FlxVideo = new FlxVideo();
+		FlxG.addChildBelowMouse(video);
+		video.load(filepath);
+		video.play();
+		video.onEndReached.add(function()
+		{
+			video.dispose();
+			FlxG.removeChild(video);
+			qqqeb();
+			return;
+		}, true);
+
+		#else
+		FlxG.log.warn('Platform not supported!');
+		qqqeb();
+		return;
+		#end
+	}
+	
+	public function qqqeb()
+	{
+	    if (FlxG.save.data.flashing == null)
+		{
+			controls.isInSubstate = false;
+			FlxTransitionableState.skipNextTransIn = true;
+			FlxTransitionableState.skipNextTransOut = true;
+			MusicBeatState.switchState(new FlashingState(new TitleState()));
+		}
+        #if CHECK_FOR_UPDATES
+        else if (mustUpdate){
+            MusicBeatState.switchState(new OutdatedState(updateVersion,new TitleState()));
+        }
+        #end
+		else
+		{
+				#if FREEPLAY
+				MusicBeatState.switchState(new FreeplayState());
+				#elseif CHARTING
+				MusicBeatState.switchState(new ChartingState());
+				#else
+				MusicBeatState.switchState(new TitleState());
+				#end
+		}
+	}
 }

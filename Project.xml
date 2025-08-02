@@ -5,9 +5,8 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 xsi:schemaLocation="http://lime.openfl.org/project/1.0.4 http://lime.openfl.org/xsd/project-1.0.4.xsd">
 	<!-- _________________________ Application Settings _________________________ -->
 	
-	<app unless="PROFILE_BUILD || mobile" title="Friday Night Funkin': P-Slice Engine" file="PSliceEngine" packageName="com.mikolka9144.pslice" package="com.mikolka9144.pslice" main="Main" version="3.2"  company="mikolka9144" />
-	<app if="PROFILE_BUILD" title="P-Slice Engine Profiling build" file="PSliceEngine" packageName="com.mikolka9144.testPslice" package="com.mikolka9144.testPslice" main="Main" version="3.2"  company="mikolka9144" />
-	<app if="mobile" unless="PROFILE_BUILD" title="P-Slice Engine" file="PSliceEngine" packageName="com.mikolka9144.pslice" package="com.mikolka9144.pslice" main="Main" version="3.2"  company="mikolka9144" />
+	<app unless="PROFILE_BUILD || mobile" title="Friday Night Funkin': Vs. Takanashi Rikka" file="TakanashiRikka" packageName="com.cwy.takanashirikka" package="com.cwy.takanashirikka" main="Main" version="3.2"  company="mikolka9144" />
+	<app if="mobile" unless="PROFILE_BUILD" title="Vs. Takanashi Rikka" file="TakanashiRikka" packageName="com.cwy.takanashirikka" package="com.cwy.takanashirikka" main="Main" version="3.2"  company="mikolka9144" />
 	<!--Switch Export with Unique ApplicationID and Icon-->
 	<set name="APP_ID" value="0x0100f6c013bbc000" />
 	<meta build-number="320"/>
@@ -50,7 +49,7 @@ xsi:schemaLocation="http://lime.openfl.org/project/1.0.4 http://lime.openfl.org/
 	<define name="TOUCH_CONTROLS_ALLOWED" if="mobile || web || debug" />
 
 	<!-- Do you want to check for P-Slice updates?-->
-	<define name="CHECK_FOR_UPDATES" unless="web || hl"/>
+	<!-- <define name="CHECK_FOR_UPDATES" unless="web || hl"/> -->
 
 	<!-- Do you want to support playing videos in your build?-->
 	<define name="VIDEOS_ALLOWED" if="desktop || mobile" unless="32bits || hl"/> 
@@ -120,7 +119,7 @@ xsi:schemaLocation="http://lime.openfl.org/project/1.0.4 http://lime.openfl.org/
 	</section>
 
 	<!-- Assets -->
-	<assets path="assets/fonts" />
+	<assets path="assets/fonts" embed="true"/>
 	<assets path="assets/mobile" 		rename="assets/shared/mobile" if="TOUCH_CONTROLS_ALLOWED" />
 	<assets path="assets/videos"        if="VIDEOS_ALLOWED"/>
 
@@ -187,6 +186,9 @@ xsi:schemaLocation="http://lime.openfl.org/project/1.0.4 http://lime.openfl.org/
 	<!-- Category Type for Apple Systems -->
 	<config:ios category_type="public.app-category.music-games" />
 	<config:mac category_type="public.app-category.music-games" />
+
+	<!-- Allow Access to Engine Files in iOS -->
+	<haxedef name="SHARE_MOBILE_FILES" if="ios" />
 
 	<!-- Disable Discord IO Thread -->
 	<haxedef name="DISCORD_DISABLE_IO_THREAD" if="hxdiscord_rpc" />
@@ -271,21 +273,11 @@ xsi:schemaLocation="http://lime.openfl.org/project/1.0.4 http://lime.openfl.org/
 		<icon path="art/desktop/icon16.png"/>
 	</section>
 	<section unless="PROFILE_BUILD">
-		<section if="mobile">
-			<icon path="art/mobile/iconAdaptive.png" if="android" />
-			<icon path="art/mobile/iconMobile.png" unless="android" />
-			<icon path="art/mobile/icon32.png" size='32'/>
-			<icon path="art/mobile/icon64.png" size='64'/>
-			<icon path="art/mobile/icon128.png" size='128'/>
-		</section>
-		<section unless="mobile">
-
 			<assets path='art/desktop/iconOG.png' rename='icon.png' if="linux" />
-			<icon path="art/desktop/icon16.png" size='16'/>
-			<icon path="art/desktop//icon32.png" size='32'/>
-			<icon path="art/desktop//icon64.png" size='64'/>
-			<icon path="art/desktop//iconOG.png" />
-		</section>
+			<icon path="art/icon16.png" size='16'/>
+			<icon path="art/icon32.png" size='32'/>
+			<icon path="art/icon64.png" size='64'/>
+			<icon path="art/iconOG.png" />
 	</section>
 
 </project>

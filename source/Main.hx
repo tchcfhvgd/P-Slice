@@ -25,6 +25,7 @@ import lime.graphics.Image;
 #end
 #if mobile
 import mobile.backend.MobileScaleMode;
+import states.CopyState;
 #end
 
 #if (linux && !debug)
@@ -100,6 +101,11 @@ class Main extends Sprite
 	public static function main():Void
 	{
 		Lib.current.addChild(new Main());
+		#if cpp
+		cpp.NativeGc.enable(true);
+		#elseif hl
+		hl.Gc.enable(true);
+		#end
 	}
 
 	public function new()
@@ -258,7 +264,7 @@ class Main extends Sprite
 		#end
 
 		trace("Loading game objest...");
-		var gameObject = new FlxGame(game.width, game.height, game.initialState, #if (flixel < "5.0.0") game.zoom, #end game.framerate, game.framerate,
+		var gameObject = new FlxGame(game.width, game.height, #if mobile !CopyState.checkExistingFiles() ? CopyState : #end game.initialState, #if (flixel < "5.0.0") game.zoom, #end game.framerate, game.framerate,
 			game.skipSplash, game.startFullscreen);
 		// FlxG.game._customSoundTray wants just the class, it calls new from
 		// create() in there, which gets called when it's added to stage

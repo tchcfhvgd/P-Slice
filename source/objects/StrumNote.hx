@@ -24,6 +24,7 @@ class StrumNote extends FlxSprite
 		return value;
 	}
 
+	//qqqeb
 	public var useRGBShader:Bool = true;
 	public function new(x:Float, y:Float, leData:Int, player:Int) {
 		animation = new PsychAnimationController(this);

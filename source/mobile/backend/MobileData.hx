@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Mobile Porting Team
+ * Copyright (C) 2025 Mobile Porting Team
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -38,6 +38,8 @@ class MobileData
 	public static var dpadModes:Map<String, TouchButtonsData> = new Map();
 	public static var extraActions:Map<String, ExtraActions> = new Map();
 
+	public static var mode(get, set):Int;
+	public static var forcedMode:Null<Int>;
 	public static var save:FlxSave;
 
 	public static function init()
@@ -59,14 +61,66 @@ class MobileData
 			extraActions.set(data.getName(), data);
 	}
 
-	public static function getButtonsColors():Array<FlxColor>
+	public static function setTouchPadCustom(touchPad:TouchPad):Void
+	{
+		if (save.data.buttons == null)
+		{
+			save.data.buttons = new Array();
+			for (buttons in touchPad)
+				save.data.buttons.push(FlxPoint.get(buttons.x, buttons.y));
+		}
+		else
+		{
+			var tempCount:Int = 0;
+			for (buttons in touchPad)
+			{
+				save.data.buttons[tempCount] = FlxPoint.get(buttons.x, buttons.y);
+				tempCount++;
+			}
+		}
+
+		save.flush();
+	}
+
+	public static function getTouchPadCustom(touchPad:TouchPad):TouchPad
+	{
+		var tempCount:Int = 0;
+
+		if (save.data.buttons == null)
+			return touchPad;
+
+		for (buttons in touchPad)
+		{
+			if (save.data.buttons[tempCount] != null)
+			{
+				buttons.x = save.data.buttons[tempCount].x;
+				buttons.y = save.data.buttons[tempCount].y;
+			}
+			tempCount++;
+		}
+
+		return touchPad;
+	}
+
+	public static function setButtonsColors(buttonsInstance:Dynamic):Dynamic
 	{
 		// Dynamic Controls Color
-		var data:Dynamic = ClientPrefs.data;
+		var data:Dynamic;
 		if (ClientPrefs.data.dynamicColors)
-			return [data.arrowRGB[0][0],data.arrowRGB[1][0],data.arrowRGB[2][0],data.arrowRGB[3][0],0xFF0066FF,0xA6FF00];
+			data = ClientPrefs.data;
 		else
-			return [0xFFC24B99,0xFF00FFFF,0xFF12FA05,0xFFF9393F,0xFF0066FF,0xA6FF00];
+			data = ClientPrefs.defaultData;
+
+		for (i => button in [
+			buttonsInstance.buttonLeft,
+			buttonsInstance.buttonDown,
+			buttonsInstance.buttonUp,
+			buttonsInstance.buttonRight])
+		{
+			button.color = data.arrowRGB[i][0];
+		}
+
+		return buttonsInstance;
 	}
 
 	public static function readDirectory(folder:String, map:Dynamic)
@@ -86,6 +140,27 @@ class MobileData
 				map.set(mapKey, json);
 			}
 		}
+	}
+
+	static function set_mode(mode:Int = 3)
+	{
+		save.data.mobileControlsMode = mode;
+		save.flush();
+		return mode;
+	}
+
+	static function get_mode():Int
+	{
+		if (forcedMode != null)
+			return forcedMode;
+
+		if (save.data.mobileControlsMode == null)
+		{
+			save.data.mobileControlsMode = 3;
+			save.flush();
+		}
+
+		return save.data.mobileControlsMode;
 	}
 }
 

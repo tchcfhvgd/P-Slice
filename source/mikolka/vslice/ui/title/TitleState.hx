@@ -14,9 +14,6 @@ import openfl.display.Bitmap;
 import openfl.display.BitmapData;
 import shaders.ColorSwap;
 import mikolka.vslice.components.ScreenshotPlugin;
-#if VIDEOS_ALLOWED
-import mikolka.vslice.ui.title.AttractState;
-#end
 
 using StringTools;
 
@@ -262,8 +259,8 @@ class TitleState extends MusicBeatState
 	override function update(elapsed:Float)
 	{
 		#if debug
-		if (controls.FAVORITE)
-			moveToAttract();
+		//if (controls.FAVORITE)
+			//moveToAttract();
 		#end
 		if (!cheatActive && skippedIntro)
 			cheatCodeShit();
@@ -461,9 +458,6 @@ class TitleState extends MusicBeatState
 				case 1:
 					// FlxG.sound.music.stop();
 					FlxG.sound.playMusic(Paths.music('freakyMenu'), 0);
-					#if VIDEOS_ALLOWED
-					FlxG.sound.music.onComplete = moveToAttract;
-					#end
 					FlxG.sound.music.fadeIn(4, 0, 0.7);
 				case 17:
 					skipIntro();
@@ -478,9 +472,6 @@ class TitleState extends MusicBeatState
 	{
 		if (!skippedIntro)
 		{
-			#if VIDEOS_ALLOWED
-			FlxG.sound.music.onComplete = moveToAttract;
-			#end
 			#if TITLE_SCREEN_EASTER_EGG
 			if (playJingle) // Ignore deez
 			{
@@ -609,7 +600,7 @@ class TitleState extends MusicBeatState
 	/**
 	 * After sitting on the title screen for a while, transition to the attract screen.
 	 */
-	function moveToAttract():Void
+	/*function moveToAttract():Void
 	{
 		#if VIDEOS_ALLOWED 
 		if (!Std.isOfType(FlxG.state, TitleState))
@@ -620,5 +611,5 @@ class TitleState extends MusicBeatState
 		FlxG.switchState(() -> new AttractState()); 
 		#end
 		#end
-	}
+	}*/
 }

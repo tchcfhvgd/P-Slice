@@ -1,6 +1,5 @@
 package states;
 
-
 import backend.PsychCamera;
 import mikolka.compatibility.VsliceOptions;
 import mikolka.stages.EventLoader;
@@ -24,8 +23,6 @@ import lime.utils.Assets;
 import openfl.utils.Assets as OpenFlAssets;
 import openfl.events.KeyboardEvent;
 import haxe.Json;
-
-
 
 import lime.math.Matrix3;
 import mikolka.funkin.Scoring;
@@ -566,7 +563,7 @@ class PlayState extends MusicBeatState
 		uiGroup.add(iconP2);
 
 		scoreTxt = new FlxText(0, healthBar.y + 40, FlxG.width, "", 20);
-		scoreTxt.setFormat(Paths.font("vcr.ttf"), 20, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		scoreTxt.setFormat(Paths.font("vcr1.ttf"), 20, FlxColor.PINK, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		scoreTxt.scrollFactor.set();
 		scoreTxt.borderSize = 1.25;
 		scoreTxt.visible = !ClientPrefs.data.hideHud;
@@ -612,7 +609,7 @@ class PlayState extends MusicBeatState
 
 		// SONG SPECIFIC SCRIPTS
 		#if (LUA_ALLOWED || HSCRIPT_ALLOWED)
-		for (folder in Mods.directoriesWithFile(Paths.getSharedPath(), 'data/$songName/'))
+		for (folder in Mods.directoriesWithFile(Paths.getSharedPath(), 'songs/$songName/'))
 			#if linux
 			for (file in CoolUtil.sortAlphabetically(NativeFileSystem.readDirectory(folder)))
 			#else
@@ -632,10 +629,10 @@ class PlayState extends MusicBeatState
 		#end
 
 		#if TOUCH_CONTROLS_ALLOWED
-		addHitbox();
-		hitbox.visible = true;
-		hitbox.onButtonDown.add(onHintPress);
-		hitbox.onButtonUp.add(onHintRelease);
+		addMobileControls();
+		mobileControls.instance.visible = true;
+		mobileControls.onButtonDown.add(onButtonPress);
+		mobileControls.onButtonUp.add(onButtonRelease);
 		#end
 
 		startCallback();
@@ -669,7 +666,7 @@ class PlayState extends MusicBeatState
 		var holdSplash:SustainSplash = new SustainSplash();
 		holdSplash.alpha = 0.0001;
 
-		#if (TOUCH_CONTROLS_ALLOWED)
+		#if (TOUCH_CONTROLS_ALLOWED && !android)
 		addTouchPad('NONE', 'P');
 		addTouchPadCamera();
 		#end
@@ -1752,7 +1749,7 @@ class PlayState extends MusicBeatState
 			botplayTxt.alpha = 1 - Math.sin((Math.PI * botplaySine) / 180);
 		}
 
-		if ((controls.PAUSE #if TOUCH_CONTROLS_ALLOWED || touchPad?.buttonP.justPressed #end #if android || FlxG.android.justReleased.BACK #end) && startedCountdown && canPause)
+		if ((controls.PAUSE #if (TOUCH_CONTROLS_ALLOWED && !android) || touchPad?.buttonP.justPressed #end #if android || FlxG.android.justReleased.BACK #end) && startedCountdown && canPause)
 		{
 			var ret:Dynamic = callOnScripts('onPause', null, true);
 			if(ret != LuaUtils.Function_Stop) {
@@ -2462,7 +2459,7 @@ class PlayState extends MusicBeatState
 	public function endSong()
 	{
 		#if TOUCH_CONTROLS_ALLOWED
-		hitbox.visible = #if !android touchPad.visible = #end false;
+		mobileControls.instance.visible = #if !android touchPad.visible = #end false;
 		#end
 		//Should kill you if you tried to cheat
 		if(!startingSong)
@@ -3087,22 +3084,26 @@ class PlayState extends MusicBeatState
 	}
 
 	#if TOUCH_CONTROLS_ALLOWED
-	private function onHintPress(button:TouchButton):Void
+	private function onButtonPress(button:TouchButton):Void
 	{
+		if (button.IDs.filter(id -> id.toString().startsWith("EXTRA")).length > 0)
+			return;
 
-
-		var buttonCode:Int = (button.IDs[0].toString().startsWith('HITBOX')) ? button.IDs[1] : button.IDs[0];
-		callOnScripts('onHintPressPre', [buttonCode]);
+		var buttonCode:Int = (button.IDs[0].toString().startsWith('NOTE')) ? button.IDs[0] : button.IDs[1];
+		callOnScripts('onButtonPressPre', [buttonCode]);
 		if (button.justPressed) keyPressed(buttonCode);
-		callOnScripts('onHintPress', [buttonCode]);
+		callOnScripts('onButtonPress', [buttonCode]);
 	}
 
-	private function onHintRelease(button:TouchButton):Void
+	private function onButtonRelease(button:TouchButton):Void
 	{
-		var buttonCode:Int = (button.IDs[0].toString().startsWith('HITBOX')) ? button.IDs[1] : button.IDs[0];
-		callOnScripts('onHintReleasePre', [buttonCode]);
+		if (button.IDs.filter(id -> id.toString().startsWith("EXTRA")).length > 0)
+			return;
+
+		var buttonCode:Int = (button.IDs[0].toString().startsWith('NOTE')) ? button.IDs[0] : button.IDs[1];
+		callOnScripts('onButtonReleasePre', [buttonCode]);
 		if(buttonCode > -1) keyReleased(buttonCode);
-		callOnScripts('onHintRelease', [buttonCode]);
+		callOnScripts('onButtonRelease', [buttonCode]);
 	}
 	#end
 

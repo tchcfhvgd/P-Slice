@@ -9,14 +9,14 @@ import states.InitState;
 // Add a variable here and it will get automatically saved
 @:structInit class SaveVariables {
 	// Mobile and Mobile Controls Releated
-	public var extraHints:String = "NONE"; // hitbox extra hint option
-	public var hitbox2:Bool = true; // hitbox extra button position option
+	public var extraButtons:String = "NONE"; // mobile extra button option
+	public var hitboxPos:Bool = true; // hitbox extra button position option
 	public var dynamicColors:Bool = true; // yes cause its cool -Karim
-	public var controlsAlpha:Float = 0.6;
+	public var controlsAlpha:Float = FlxG.onMobile ? 0.6 : 0;
 	public var screensaver:Bool = false;
 	public var wideScreen:Bool = false;
 	#if android
-	public var storageType:String = "EXTERNAL";
+	public var storageType:String = "EXTERNAL_DATA";
 	#end
 	public var hitboxType:String = "Gradient";
 	public var popUpRating:Bool = true;
@@ -169,10 +169,10 @@ class ClientPrefs {
 		'reset'			=> [BACK]
 	];
 	public static var mobileBinds:Map<String, Array<MobileInputID>> = [
-		'note_up'		=> [HITBOX_UP],
-		'note_left'		=> [HITBOX_LEFT],
-		'note_down'		=> [HITBOX_DOWN],
-		'note_right'	=> [HITBOX_RIGHT],
+		'note_up'		=> [NOTE_UP],
+		'note_left'		=> [NOTE_LEFT],
+		'note_down'		=> [NOTE_DOWN],
+		'note_right'	=> [NOTE_RIGHT],
 
 		'ui_up'			=> [UP],
 		'ui_left'		=> [LEFT],
@@ -185,7 +185,7 @@ class ClientPrefs {
 
 		'accept'		=> [A],
 		'back'			=> [B],
-		'pause'			=> [P],
+		'pause'			=> [#if android NONE #else P #end],
 		'screenshot'    => [NONE],
 		'reset'			=> [NONE]
 	];

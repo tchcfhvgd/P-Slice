@@ -127,7 +127,7 @@ class OptionsState extends MusicBeatState
 		#end
 
 		#if TOUCH_CONTROLS_ALLOWED
-		addTouchPad('UP_DOWN', 'A_B');
+		addTouchPad('UP_DOWN', 'A_B_C');
 
 		var button = new TouchZone(90,270,1090,100,FlxColor.PURPLE);
 		
@@ -159,7 +159,7 @@ class OptionsState extends MusicBeatState
 		
 		#if TOUCH_CONTROLS_ALLOWED
 		removeTouchPad();
-		addTouchPad('UP_DOWN', 'A_B');
+	    addTouchPad('UP_DOWN', 'A_B_C');
 		#end
 	}
 
@@ -175,6 +175,12 @@ class OptionsState extends MusicBeatState
 			FlxG.sound.play(Paths.sound('scrollMenu'));
 			changeSelection(1,true);
 		}
+		
+		if (touchPad.buttonC.justPressed || FlxG.keys.justPressed.CONTROL && controls.mobileC)
+			{
+				persistentUpdate = false;
+				openSubState(new mobile.substates.MobileControlSelectSubState());
+			}
 
 		var lerpVal:Float = Math.max(0, Math.min(1, elapsed * 7.5));
 		camFollowPos.setPosition(635, FlxMath.lerp(camFollowPos.y, camFollow.y, lerpVal));
