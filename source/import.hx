@@ -22,6 +22,8 @@ import mobile.input.MobileInputID;
 import mobile.backend.SwipeUtil;
 import mobile.backend.TouchUtil;
 #if TOUCH_CONTROLS_ALLOWED
+import mobile.objects.MobileControls;
+import mobile.objects.IMobileControls;
 import mobile.objects.Hitbox;
 import mobile.objects.TouchPad;
 import mobile.objects.TouchButton;
